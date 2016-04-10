@@ -169,7 +169,7 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
     for repository in old_data['repositories']:
         user_match = re.match('https://github.com/([^/]+)$', repository)
         if user_match:
-            api_url = 'https://api.github.com/users/%s/repos?per_page=100&%s' % (user_match.group(1), client_auth)
+            api_url = 'https://api.github.com/users/{0!s}/repos?per_page=100&{1!s}'.format(user_match.group(1), client_auth)
             json_string = urlopen(api_url).read()
             requests += 1
             data = json.loads(str(json_string, encoding='utf-8'))
@@ -207,13 +207,13 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
             success = False
             while not success:
                 try:
-                    branch_url = 'https://api.github.com/repos/%s/%s/branches/%s?%s' % (user, repo, branch, client_auth)
+                    branch_url = 'https://api.github.com/repos/{0!s}/{1!s}/branches/{2!s}?{3!s}'.format(user, repo, branch, client_auth)
                     requests += 1
                     json_string = urlopen(branch_url).read()
                     data = json.loads(str(json_string, encoding='utf-8'))
                     sha = data['commit']['sha']
 
-                    tree_url = 'https://api.github.com/repos/%s/%s/git/trees/%s?%s' % (user, repo, sha, client_auth)
+                    tree_url = 'https://api.github.com/repos/{0!s}/{1!s}/git/trees/{2!s}?{3!s}'.format(user, repo, sha, client_auth)
                     requests += 1
                     json_string = urlopen(tree_url).read()
                     data = json.loads(str(json_string, encoding='utf-8'))
@@ -221,7 +221,7 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
                     success = True
                 except (HTTPError):
                     five_hundreds += 1
-                    print('Requests: %s, 500s: %s' % (requests, five_hundreds))
+                    print('Requests: {0!s}, 500s: {1!s}'.format(requests, five_hundreds))
                     pass
 
             has_python = False
@@ -231,9 +231,9 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
                    break
 
             if not has_python:
-                print('No python: %s' % name)
+                print('No python: {0!s}'.format(name))
             else:
-                print('Yes python: %s' % name)
+                print('Yes python: {0!s}'.format(name))
 
             master_list.append(name)
 

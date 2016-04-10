@@ -33,7 +33,7 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
     for repository in old_data['repositories']:
         user_match = re.match('https://github.com/([^/]+)$', repository)
         if user_match:
-            api_url = 'https://api.github.com/users/%s/repos?per_page=100&%s' % (user_match.group(1), client_auth)
+            api_url = 'https://api.github.com/users/{0!s}/repos?per_page=100&{1!s}'.format(user_match.group(1), client_auth)
             json_string = urlopen(api_url).read()
             data = json.loads(str(json_string, encoding='utf-8'))
             for repo in data:
@@ -701,9 +701,9 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
             entry['details'] = repository
 
             if repo_match.group(1).lower() == 'github.com':
-                release_url = 'https://github.com/%s/%s/tree/%s' % (repo_match.group(2), repo_match.group(3), branch)
+                release_url = 'https://github.com/{0!s}/{1!s}/tree/{2!s}'.format(repo_match.group(2), repo_match.group(3), branch)
             else:
-                release_url = 'https://bitbucket.org/%s/%s/src/%s' % (repo_match.group(2), repo_match.group(3), branch)
+                release_url = 'https://bitbucket.org/{0!s}/{1!s}/src/{2!s}'.format(repo_match.group(2), repo_match.group(3), branch)
             entry['releases'] = [
                 OrderedDict([
                     ('sublime_text', compatible_version),
@@ -713,9 +713,9 @@ with open(old_repositories_json_path, encoding='utf-8') as of:
 
             if name in st3_with_branch:
                 if repo_match.group(1).lower() == 'github.com':
-                    release_url = 'https://github.com/%s/%s/tree/%s' % (repo_match.group(2), repo_match.group(3), st3_with_branch[name])
+                    release_url = 'https://github.com/{0!s}/{1!s}/tree/{2!s}'.format(repo_match.group(2), repo_match.group(3), st3_with_branch[name])
                 else:
-                    release_url = 'https://bitbucket.org/%s/%s/src/%s' % (repo_match.group(2), repo_match.group(3), st3_with_branch[name])
+                    release_url = 'https://bitbucket.org/{0!s}/{1!s}/src/{2!s}'.format(repo_match.group(2), repo_match.group(3), st3_with_branch[name])
                 entry['releases'].append(
                     OrderedDict([
                         ('sublime_text', '>=3000'),
@@ -742,7 +742,7 @@ if not os.path.exists(new_repository_subfolder_path):
     os.mkdir(new_repository_subfolder_path)
 
 for letter in names:
-    include_path = '%s%s.json' % (new_repository_subfolder_path, letter)
+    include_path = '{0!s}{1!s}.json'.format(new_repository_subfolder_path, letter)
     includes.append(include_path)
     sorted_names = sorted(names[letter], key=str.lower)
     sorted_packages = []

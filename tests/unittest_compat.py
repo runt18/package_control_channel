@@ -14,14 +14,14 @@ def inject_into_unittest():
                 """Just like self.assertTrue(a in b), but with a nicer default message."""
                 if member not in container:
                     if not msg:
-                        msg = '%r not found in %r' % (member, container)
+                        msg = '{0!r} not found in {1!r}'.format(member, container)
                     self.fail(msg)
 
             def assertNotIn(self, member, container, msg=None):
                 """Just like self.assertTrue(a not in b), but with a nicer default message."""
                 if member in container:
                     if not msg:
-                        msg = '%s unexpectedly found in %s' % (member,
+                        msg = '{0!s} unexpectedly found in {1!s}'.format(member,
                                                                container)
                     self.fail(msg)
 
@@ -29,7 +29,7 @@ def inject_into_unittest():
                 """Just like self.assertTrue(a > b), but with a nicer default message."""
                 if not a > b:
                     if not msg:
-                        msg = '%s not greater than %s' % (a, b)
+                        msg = '{0!s} not greater than {1!s}'.format(a, b)
                     self.fail(msg)
 
             def assertRegex(self, text, expected_regexp, msg=None):
@@ -38,7 +38,7 @@ def inject_into_unittest():
                     expected_regexp = re.compile(expected_regexp)
                 if not expected_regexp.search(text):
                     msg = msg or "Regexp didn't match"
-                    msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+                    msg = '{0!s}: {1!r} not found in {2!r}'.format(msg, expected_regexp.pattern, text)
                     raise self.failureException(msg)
 
             def assertNotRegex(self, text, unexpected_regexp, msg=None):
@@ -48,7 +48,7 @@ def inject_into_unittest():
                 match = unexpected_regexp.search(text)
                 if match:
                     msg = msg or "Regexp matched"
-                    msg = '%s: %r matches %r in %r' % (msg,
+                    msg = '{0!s}: {1!r} matches {2!r} in {3!r}'.format(msg,
                                                        text[match.start():match.end()],
                                                        unexpected_regexp.pattern,
                                                        text)
@@ -59,7 +59,7 @@ def inject_into_unittest():
                 default message."""
                 if not isinstance(obj, cls):
                     if not msg:
-                        msg = '%s is not an instance of %r' % (obj, cls)
+                        msg = '{0!s} is not an instance of {1!r}'.format(obj, cls)
                     self.fail(msg)
 
         unittest.TestCase = PatchedTestCase

@@ -116,7 +116,7 @@ def generate_test_methods(cls, stream):
                 mname = "test_" + mname
 
             # Include parameters in attribute name
-            name = "%s(%s)" % (mname, ", ".join(args))
+            name = "{0!s}({1!s})".format(mname, ", ".join(args))
             setattr(cls, name, wrapper)
 
         # Remove the generator afterwards, it did its work
@@ -273,7 +273,7 @@ class TestContainer(object):
     def _test_indentation(self, filename, contents):
         for i, line in enumerate(contents.splitlines()):
             self.assertRegex(line, r"^\t*\S",
-                             "Indent must be tabs in line %d" % (i + 1))
+                             "Indent must be tabs in line {0:d}".format((i + 1)))
 
     package_key_types_map = {
         'name': str_cls,
@@ -517,7 +517,7 @@ class TestContainer(object):
                 self.assertRegex(v, r'(?i)^[0-9a-f]{64}$')
 
     def enforce_key_types_map(self, k, v, key_types_map):
-        self.assertIn(k, key_types_map, 'Unknown key "%s"' % k)
+        self.assertIn(k, key_types_map, 'Unknown key "{0!s}"'.format(k))
         self.assertIsInstance(v, key_types_map[k], k)
 
         if (
@@ -543,9 +543,9 @@ class TestContainer(object):
 
         if e:
             if isinstance(e, HTTPError):
-                self.fail("%s: %s" % (msg, e))
+                self.fail("{0!s}: {1!s}".format(msg, e))
             else:
-                self.fail("%s: %r" % (msg, e))
+                self.fail("{0!s}: {1!r}".format(msg, e))
         else:
             self.fail(msg)
 
@@ -567,7 +567,7 @@ class TestContainer(object):
             and .flush()
         """
         # TODO multi-threading
-        stream.write("%s ... " % path)
+        stream.write("{0!s} ... ".format(path))
         stream.flush()
 
         success = False
@@ -579,7 +579,7 @@ class TestContainer(object):
                     source = f.read()
                     f.close()
                 except Exception as e:
-                    yield cls._fail("Downloading %s failed" % path, e)
+                    yield cls._fail("Downloading {0!s} failed".format(path), e)
                     return
                 source = source.decode("utf-8", 'strict')
             else:
@@ -587,37 +587,35 @@ class TestContainer(object):
                     with _open(path) as f:
                         source = f.read().decode('utf-8', 'strict')
                 except Exception as e:
-                    yield cls._fail("Opening %s failed" % path, e)
+                    yield cls._fail("Opening {0!s} failed".format(path), e)
                     return
 
             if not source:
-                yield cls._fail("%s is empty" % path)
+                yield cls._fail("{0!s} is empty".format(path))
                 return
 
             # Parse the repository
             try:
                 data = json.loads(source)
             except Exception as e:
-                yield cls._fail("Could not parse %s" % path, e)
+                yield cls._fail("Could not parse {0!s}".format(path), e)
                 return
 
             # Check for the schema version first (and generator failures it's
             # badly formatted)
             if 'schema_version' not in data:
-                yield cls._fail("No schema_version found in %s" % path)
+                yield cls._fail("No schema_version found in {0!s}".format(path))
                 return
             schema = data['schema_version']
             if schema != '3.0.0' and float(schema) not in (1.0, 1.1, 1.2, 2.0):
-                yield cls._fail("Unrecognized schema version %s in %s"
-                                % (schema, path))
+                yield cls._fail("Unrecognized schema version {0!s} in {1!s}".format(schema, path))
                 return
 
             success = True
 
             # Do not generate 1000 failing tests for not yet updated repos
             if schema != '3.0.0':
-                stream.write("skipping (schema version %s)"
-                             % data['schema_version'])
+                stream.write("skipping (schema version {0!s})".format(data['schema_version']))
                 cls.skipped_repositories[schema] += 1
                 return
             else:
@@ -639,7 +637,7 @@ class TestContainer(object):
                 if 'releases' in package:
                     for release in package['releases']:
                         (yield cls._test_release,
-                            ("%s (%s)" % (package_name, path),
+                            ("{0!s} ({1!s})".format(package_name, path),
                              release, False, False))
         if 'includes' in data:
             for include in data['includes']:
@@ -695,7 +693,7 @@ class DefaultChannelTests(TestContainer, unittest.TestCase):
     def tearDownClass(cls):
         if cls.skipped_repositories:
             # TODO somehow pass stream here
-            print("Repositories skipped: %s" % dict(cls.skipped_repositories))
+            print("Repositories skipped: {0!s}".format(dict(cls.skipped_repositories)))
 
     def test_channel_keys(self):
         keys = sorted(self.j.keys())
@@ -732,7 +730,7 @@ class DefaultChannelTests(TestContainer, unittest.TestCase):
             if repository.startswith('.'):
                 continue
             if not repository.startswith("http"):
-                cls._fail("Unexpected repository url: %s" % repository)
+                cls._fail("Unexpected repository url: {0!s}".format(repository))
 
             for test in cls._include_tests(repository, stream):
                 yield test
@@ -781,7 +779,7 @@ class DefaultRepositoryTests(TestContainer, unittest.TestCase):
                     contents = f.read().decode('utf-8', 'strict')
                 data = json.loads(contents)
             except Exception as e:
-                yield cls._fail("strict while reading %r" % include, e)
+                yield cls._fail("strict while reading {0!r}".format(include), e)
                 continue
 
             # `include` is for output during tests only
@@ -797,7 +795,7 @@ class DefaultRepositoryTests(TestContainer, unittest.TestCase):
                 if 'releases' in package:
                     for release in package['releases']:
                         (yield cls._test_release,
-                            ("%s (%s)" % (package_name, include),
+                            ("{0!s} ({1!s})".format(package_name, include),
                              release,
                              False))
 
@@ -812,7 +810,7 @@ class DefaultRepositoryTests(TestContainer, unittest.TestCase):
                     if 'releases' in dependency:
                         for release in dependency['releases']:
                             (yield cls._test_release,
-                                ("%s (%s)" % (dependency_name, include),
+                                ("{0!s} ({1!s})".format(dependency_name, include),
                                  release,
                                  True))
 
